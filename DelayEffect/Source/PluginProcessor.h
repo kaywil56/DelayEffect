@@ -54,6 +54,13 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
+    juce::AudioBuffer<float> delayBuffer;
+    int delayBufferSamples{ 0 };
+    int delayWritePosition{ 0 };
+    double sampleRate{ 44100.0 };
+    float delayTime{ 0.7f };
+    float feedback{ 0.6f };
+    float dryWet{ 1.0f };
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayEffectAudioProcessor)
 };
