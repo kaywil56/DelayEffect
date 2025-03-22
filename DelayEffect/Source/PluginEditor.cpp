@@ -11,11 +11,23 @@
 
 //==============================================================================
 DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor (DelayEffectAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), 
+    audioProcessor (p),
+   dryWetSliderRelay("dryWet"),
+    webBrowserComponent(
+        juce::WebBrowserComponent::Options{}
+        .withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
+        .withWinWebView2Options(juce::WebBrowserComponent::Options::WinWebView2{}
+            .withUserDataFolder(juce::File::getSpecialLocation(juce::File::SpecialLocationType::tempDirectory)))
+        .withNativeIntegrationEnabled()
+        .withOptionsFrom(dryWetSliderRelay)
+        .withOptionsFrom(controlParameterIndexReceiver)
+    ),
+    dryWetAttachment(*audioProcessor.audioProcessorValueTreeState.getParameter("dryWet"), dryWetSliderRelay, audioProcessor.audioProcessorValueTreeState.undoManager)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    addAndMakeVisible(webBrowserComponent);
+    webBrowserComponent.goToURL("localhost:5173");
+    setSize(400, 300);
 }
 
 DelayEffectAudioProcessorEditor::~DelayEffectAudioProcessorEditor()
@@ -25,16 +37,12 @@ DelayEffectAudioProcessorEditor::~DelayEffectAudioProcessorEditor()
 //==============================================================================
 void DelayEffectAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour (juce::Colours::white);
-    g.setFont (juce::FontOptions (15.0f));
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void DelayEffectAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+        // subcomponents in your editor..
+    webBrowserComponent.setBounds(getLocalBounds());
 }

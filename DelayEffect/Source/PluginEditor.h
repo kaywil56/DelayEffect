@@ -28,6 +28,10 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     DelayEffectAudioProcessor& audioProcessor;
+    juce::WebSliderRelay dryWetSliderRelay;
+    juce::WebControlParameterIndexReceiver controlParameterIndexReceiver;
+    juce::WebBrowserComponent webBrowserComponent;
+    juce::WebSliderParameterAttachment dryWetAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayEffectAudioProcessorEditor)
 };

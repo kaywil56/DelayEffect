@@ -13,7 +13,8 @@
 DelayEffectAudioProcessor::DelayEffectAudioProcessor() : 
     AudioProcessor(BusesProperties()
         .withInput("Input", juce::AudioChannelSet::stereo())
-        .withOutput("Output", juce::AudioChannelSet::stereo()))
+        .withOutput("Output", juce::AudioChannelSet::stereo())),
+    audioProcessorValueTreeState(*this, nullptr, "Params", createParams())
 {
 }
 
@@ -115,6 +116,8 @@ void DelayEffectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     const int numChannels = getTotalNumInputChannels();
     const int numSamples = buffer.getNumSamples();
 
+    dryWet = *audioProcessorValueTreeState.getRawParameterValue("dryWet");
+
     int delayInSamples = (int)(delayTime * sampleRate);
 
     for (int channel = 0; channel < numChannels; ++channel)
@@ -166,6 +169,14 @@ void DelayEffectAudioProcessor::setStateInformation (const void* data, int sizeI
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout DelayEffectAudioProcessor::createParams()
+{
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
+
+    params.push_back(std::make_unique <juce::AudioParameterFloat>("dryWet", "Dry/Wet", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.1f }, 0.5f));
+    return { params.begin(), params.end() };
 }
 
 //==============================================================================

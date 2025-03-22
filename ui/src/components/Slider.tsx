@@ -3,10 +3,11 @@ import * as Juce from "juce-framework-frontend";
 
 interface Props {
   identifier: string,
-  title: string
+  title: string,
+  controlParameterIndexAnnotation: string
 }
 
-const Slider = ({ identifier, title } : Props) => {
+const Slider = ({ identifier, title, controlParameterIndexAnnotation } : Props) => {
   const sliderState = Juce.getSliderState(identifier)
 
   const [value, setValue] = useState<any>(sliderState.getNormalisedValue())
@@ -39,8 +40,12 @@ const Slider = ({ identifier, title } : Props) => {
     };
   });
 
-  return <div>
-    <span className="label">Dry/Wet</span>
+  return <div
+  {...{
+    [controlParameterIndexAnnotation]: sliderState.properties.paramaterIndex
+  }}
+  >
+    <span className="label">{title}</span>
     <input 
     type="range"
     aria-label={title} 

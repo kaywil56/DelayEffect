@@ -53,6 +53,9 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    juce::AudioProcessorValueTreeState::ParameterLayout createParams();
+    juce::AudioProcessorValueTreeState audioProcessorValueTreeState;
+
 private:
     juce::AudioBuffer<float> delayBuffer;
     int delayBufferSamples{ 0 };
