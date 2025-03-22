@@ -1,6 +1,8 @@
+import Slider from "./components/Slider"
+
 function App() {
   return (
-    <button className="btn">Default</button>
+    <Slider identifier="1" title="drywet" />
   )
 }
 
