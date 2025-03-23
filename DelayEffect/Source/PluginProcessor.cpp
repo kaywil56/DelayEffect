@@ -117,6 +117,8 @@ void DelayEffectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     const int numSamples = buffer.getNumSamples();
 
     dryWet = *audioProcessorValueTreeState.getRawParameterValue("dryWet");
+    feedback = *audioProcessorValueTreeState.getRawParameterValue("feedback");
+    delayTime = *audioProcessorValueTreeState.getRawParameterValue("delayTime");
 
     int delayInSamples = (int)(delayTime * sampleRate);
 
@@ -176,6 +178,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayEffectAudioProcessor::c
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
 
     params.push_back(std::make_unique <juce::AudioParameterFloat>("dryWet", "Dry/Wet", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.1f }, 0.5f));
+    params.push_back(std::make_unique <juce::AudioParameterFloat>("delayTime", "Delay Time", juce::NormalisableRange<float> { 0.01f, 2.0f, 0.1f }, 0.2f));
+    params.push_back(std::make_unique <juce::AudioParameterFloat>("feedback", "Feedback", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.1f }, 0.5f));
     return { params.begin(), params.end() };
 }
 

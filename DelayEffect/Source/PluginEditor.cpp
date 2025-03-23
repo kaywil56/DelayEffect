@@ -14,6 +14,8 @@ DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor (DelayEffectAud
     : AudioProcessorEditor (&p), 
     audioProcessor (p),
    dryWetSliderRelay("dryWet"),
+   delayTimeSliderRelay("delayTime"),
+   feedbackSliderRelay("feedback"),
     webBrowserComponent(
         juce::WebBrowserComponent::Options{}
         .withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
@@ -21,9 +23,25 @@ DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor (DelayEffectAud
             .withUserDataFolder(juce::File::getSpecialLocation(juce::File::SpecialLocationType::tempDirectory)))
         .withNativeIntegrationEnabled()
         .withOptionsFrom(dryWetSliderRelay)
+        .withOptionsFrom(delayTimeSliderRelay)
+        .withOptionsFrom(feedbackSliderRelay)
         .withOptionsFrom(controlParameterIndexReceiver)
     ),
-    dryWetAttachment(*audioProcessor.audioProcessorValueTreeState.getParameter("dryWet"), dryWetSliderRelay, audioProcessor.audioProcessorValueTreeState.undoManager)
+    dryWetAttachment(
+        *audioProcessor.audioProcessorValueTreeState.getParameter("dryWet"),
+        dryWetSliderRelay, 
+        audioProcessor.audioProcessorValueTreeState.undoManager
+    ),
+    delayTimeAttachment(
+        *audioProcessor.audioProcessorValueTreeState.getParameter("delayTime"),
+        delayTimeSliderRelay, 
+        audioProcessor.audioProcessorValueTreeState.undoManager
+    ),
+    feedbackAttachment(
+        *audioProcessor.audioProcessorValueTreeState.getParameter("feedback"), 
+        feedbackSliderRelay, 
+        audioProcessor.audioProcessorValueTreeState.undoManager
+    )
 {
     addAndMakeVisible(webBrowserComponent);
     webBrowserComponent.goToURL("localhost:5173");
