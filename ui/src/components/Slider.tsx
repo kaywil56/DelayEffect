@@ -4,10 +4,12 @@ import * as Juce from "juce-framework-frontend";
 interface Props {
   identifier: string,
   title: string,
-  controlParameterIndexAnnotation: string
+  controlParameterIndexAnnotation: string,
+  min: number,
+  max: number
 }
 
-const Slider = ({ identifier, title, controlParameterIndexAnnotation } : Props) => {
+const Slider = ({ identifier, title, controlParameterIndexAnnotation, min, max }: Props) => {
   const sliderState = Juce.getSliderState(identifier)
 
   const [value, setValue] = useState<any>(sliderState.getNormalisedValue())
@@ -41,23 +43,26 @@ const Slider = ({ identifier, title, controlParameterIndexAnnotation } : Props) 
   });
 
   return <div
-  {...{
-    [controlParameterIndexAnnotation]: sliderState.properties.paramaterIndex
-  }}
+    {...{
+      [controlParameterIndexAnnotation]: sliderState.properties.paramaterIndex
+    }}
+    className="flex items-center justify-evenly flex-col gap-2"
   >
-    <span className="label">{title}</span>
-    <input 
-    type="range"
-    aria-label={title} 
-    min={0.0} 
-    max={1.01} 
-    step={1 / (properties.numSteps - 1)}
-    value={value} 
-    onChange={handleChange}
-    onMouseDown={mouseDown}
-    onMouseUp={changeCommitted}
-    className="range" />
-    <span className="label">{value}</span>
+    <label className="input">
+      <span className="label">{title}</span>
+      <input
+        type="range"
+        aria-label={title}
+        min={min}
+        max={max}
+        step={1 / (properties.numSteps - 1)}
+        value={value}
+        onChange={handleChange}
+        onMouseDown={mouseDown}
+        onMouseUp={changeCommitted}
+        className="range" />
+      <span className="label">{value}</span>
+    </label>
   </div>
 }
 
