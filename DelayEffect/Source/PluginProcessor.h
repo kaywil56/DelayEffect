@@ -57,13 +57,8 @@ public:
     juce::AudioProcessorValueTreeState audioProcessorValueTreeState;
 
 private:
-    juce::AudioBuffer<float> delayBuffer;
-    int delayBufferSamples{ 0 };
-    int delayWritePosition{ 0 };
-    double sampleRate{ 44100.0 };
-    float delayTime{ 0.7f };
-    float feedback{ 0.6f };
-    float dryWet{ 1.0f };
+    juce::dsp::ProcessSpec processSpec;
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> delayLine;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayEffectAudioProcessor)
 };

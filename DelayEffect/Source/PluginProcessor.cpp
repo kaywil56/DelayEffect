@@ -87,12 +87,13 @@ void DelayEffectAudioProcessor::changeProgramName (int index, const juce::String
 //==============================================================================
 void DelayEffectAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    delayBufferSamples = 2 * (sampleRate * 2.0);
-    delayBuffer.setSize(getTotalNumInputChannels(), delayBufferSamples);
-    delayBuffer.clear();
+    processSpec.sampleRate = sampleRate;
+    processSpec.maximumBlockSize = samplesPerBlock;
+    processSpec.numChannels = getTotalNumOutputChannels();
 
-    delayWritePosition = 0;
-    this->sampleRate = sampleRate;
+    delayLine.reset();
+    delayLine.setMaximumDelayInSamples(sampleRate * 2.0f);
+    delayLine.prepare(processSpec);
 }
 
 void DelayEffectAudioProcessor::releaseResources()
@@ -113,37 +114,26 @@ void DelayEffectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 {
     juce::ScopedNoDenormals noDenormals;
 
-    const int numChannels = getTotalNumInputChannels();
+    const int numChannels = getTotalNumOutputChannels();
     const int numSamples = buffer.getNumSamples();
 
-    dryWet = *audioProcessorValueTreeState.getRawParameterValue("dryWet");
-    feedback = *audioProcessorValueTreeState.getRawParameterValue("feedback");
-    delayTime = *audioProcessorValueTreeState.getRawParameterValue("delayTime");
+    auto& dryWet = *audioProcessorValueTreeState.getRawParameterValue("dryWet");
+    auto& feedback = *audioProcessorValueTreeState.getRawParameterValue("feedback");
+    auto& delayTime = *audioProcessorValueTreeState.getRawParameterValue("delayTime");
 
-    int delayInSamples = (int)(delayTime * sampleRate);
+    float delayInSamples = delayTime * processSpec.sampleRate;
 
     for (int channel = 0; channel < numChannels; ++channel)
     {
         float* channelData = buffer.getWritePointer(channel);
-        float* delayData = delayBuffer.getWritePointer(channel);
 
         for (int sample = 0; sample < numSamples; ++sample)
         {
-            int delayReadPosition = delayWritePosition - delayInSamples;
-            if (delayReadPosition < 0)
-                delayReadPosition += delayBufferSamples;
-
-            const float delayedSample = delayData[delayReadPosition];
-
             float inputSample = channelData[sample];
-
-            delayData[delayWritePosition] = inputSample + (delayedSample * feedback);
-
+            float delayedSample = delayLine.popSample(channel, delayInSamples);
+            float delayedInput = inputSample + (delayedSample * feedback);
+            delayLine.pushSample(channel, delayedInput);
             channelData[sample] = inputSample * (1.0f - dryWet) + delayedSample * dryWet;
-
-            delayWritePosition++;
-            if (delayWritePosition >= delayBufferSamples)
-                delayWritePosition = 0;
         }
     }
 }
