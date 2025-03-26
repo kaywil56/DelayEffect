@@ -13,7 +13,7 @@
 //==============================================================================
 /**
 */
-class DelayEffectAudioProcessor  : public juce::AudioProcessor
+class DelayEffectAudioProcessor  : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -55,8 +55,13 @@ public:
 
     juce::AudioProcessorValueTreeState::ParameterLayout createParams();
     juce::AudioProcessorValueTreeState audioProcessorValueTreeState;
+    void parameterChanged(const juce::String& parameterID, float newValue) override;
 
 private:
+    float dryWet{ 0.5f };
+    float feedback{ 0.5f };
+    float delayTime{ 0.5f };
+    double bpm{ 120 };
     juce::dsp::ProcessSpec processSpec;
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> delayLine;
     //==============================================================================

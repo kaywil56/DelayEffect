@@ -16,6 +16,9 @@ DelayEffectAudioProcessor::DelayEffectAudioProcessor() :
         .withOutput("Output", juce::AudioChannelSet::stereo())),
     audioProcessorValueTreeState(*this, nullptr, "Params", createParams())
 {
+    audioProcessorValueTreeState.addParameterListener("dryWet", this);
+    audioProcessorValueTreeState.addParameterListener("feedback", this);
+    audioProcessorValueTreeState.addParameterListener("delayTime", this);
 }
 
 DelayEffectAudioProcessor::~DelayEffectAudioProcessor()
@@ -117,9 +120,11 @@ void DelayEffectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     const int numChannels = getTotalNumOutputChannels();
     const int numSamples = buffer.getNumSamples();
 
-    auto& dryWet = *audioProcessorValueTreeState.getRawParameterValue("dryWet");
-    auto& feedback = *audioProcessorValueTreeState.getRawParameterValue("feedback");
-    auto& delayTime = *audioProcessorValueTreeState.getRawParameterValue("delayTime");
+
+  /*  if (auto bpmFromHost = *getPlayHead()->getPosition()->getBpm())
+        bpm = bpmFromHost;*/
+
+    /*float delayTimeBeat = 60000.0f / bpm;*/
 
     float delayInSamples = delayTime * processSpec.sampleRate;
 
@@ -171,6 +176,22 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayEffectAudioProcessor::c
     params.push_back(std::make_unique <juce::AudioParameterFloat>("delayTime", "Delay Time", juce::NormalisableRange<float> { 0.01f, 2.0f, 0.1f }, 0.2f));
     params.push_back(std::make_unique <juce::AudioParameterFloat>("feedback", "Feedback", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.1f }, 0.5f));
     return { params.begin(), params.end() };
+}
+
+void DelayEffectAudioProcessor::parameterChanged(const juce::String& parameterID, float newValue)
+{
+    if(parameterID == "dryWet")
+    {
+        dryWet = newValue;
+    }
+    else if (parameterID == "delayTime")
+    {
+        delayTime = newValue;
+    }
+    else 
+    {
+        feedback = newValue;
+    }
 }
 
 //==============================================================================

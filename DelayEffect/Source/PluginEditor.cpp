@@ -45,7 +45,7 @@ DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor (DelayEffectAud
 {
     addAndMakeVisible(webBrowserComponent);
     webBrowserComponent.goToURL("localhost:5173");
-    setSize(400, 300);
+    setSize(700, 600);
 }
 
 DelayEffectAudioProcessorEditor::~DelayEffectAudioProcessorEditor()
