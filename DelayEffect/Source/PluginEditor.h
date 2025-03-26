@@ -31,11 +31,13 @@ private:
     juce::WebSliderRelay dryWetSliderRelay;
     juce::WebSliderRelay delayTimeSliderRelay;
     juce::WebSliderRelay feedbackSliderRelay;
+    juce::WebComboBoxRelay delayTimeTypeComboBoxRelay;
     juce::WebControlParameterIndexReceiver controlParameterIndexReceiver;
     juce::WebBrowserComponent webBrowserComponent;
     juce::WebSliderParameterAttachment dryWetAttachment;
     juce::WebSliderParameterAttachment delayTimeAttachment;
     juce::WebSliderParameterAttachment feedbackAttachment;
+    juce::WebComboBoxParameterAttachment delayTimeTypeAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayEffectAudioProcessorEditor)
 };

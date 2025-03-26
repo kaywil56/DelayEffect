@@ -10,12 +10,13 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor (DelayEffectAudioProcessor& p)
-    : AudioProcessorEditor (&p), 
-    audioProcessor (p),
-   dryWetSliderRelay("dryWet"),
-   delayTimeSliderRelay("delayTime"),
-   feedbackSliderRelay("feedback"),
+DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor(DelayEffectAudioProcessor& p)
+    : AudioProcessorEditor(&p),
+    audioProcessor(p),
+    dryWetSliderRelay("dryWet"),
+    delayTimeSliderRelay("delayTime"),
+    feedbackSliderRelay("feedback"),
+    delayTimeTypeComboBoxRelay("delayTimeType"),
     webBrowserComponent(
         juce::WebBrowserComponent::Options{}
         .withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
@@ -25,21 +26,27 @@ DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor (DelayEffectAud
         .withOptionsFrom(dryWetSliderRelay)
         .withOptionsFrom(delayTimeSliderRelay)
         .withOptionsFrom(feedbackSliderRelay)
+        .withOptionsFrom(delayTimeTypeComboBoxRelay)
         .withOptionsFrom(controlParameterIndexReceiver)
     ),
     dryWetAttachment(
         *audioProcessor.audioProcessorValueTreeState.getParameter("dryWet"),
-        dryWetSliderRelay, 
+        dryWetSliderRelay,
         audioProcessor.audioProcessorValueTreeState.undoManager
     ),
     delayTimeAttachment(
         *audioProcessor.audioProcessorValueTreeState.getParameter("delayTime"),
-        delayTimeSliderRelay, 
+        delayTimeSliderRelay,
         audioProcessor.audioProcessorValueTreeState.undoManager
     ),
     feedbackAttachment(
-        *audioProcessor.audioProcessorValueTreeState.getParameter("feedback"), 
-        feedbackSliderRelay, 
+        *audioProcessor.audioProcessorValueTreeState.getParameter("feedback"),
+        feedbackSliderRelay,
+        audioProcessor.audioProcessorValueTreeState.undoManager
+    ),
+    delayTimeTypeAttachment(
+        *audioProcessor.audioProcessorValueTreeState.getParameter("delayTimeType"),
+        delayTimeTypeComboBoxRelay,
         audioProcessor.audioProcessorValueTreeState.undoManager
     )
 {

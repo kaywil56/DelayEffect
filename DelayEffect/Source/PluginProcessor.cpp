@@ -19,6 +19,7 @@ DelayEffectAudioProcessor::DelayEffectAudioProcessor() :
     audioProcessorValueTreeState.addParameterListener("dryWet", this);
     audioProcessorValueTreeState.addParameterListener("feedback", this);
     audioProcessorValueTreeState.addParameterListener("delayTime", this);
+    audioProcessorValueTreeState.addParameterListener("delayTimeType", this);
 }
 
 DelayEffectAudioProcessor::~DelayEffectAudioProcessor()
@@ -117,14 +118,15 @@ void DelayEffectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 {
     juce::ScopedNoDenormals noDenormals;
 
+    return;
+
     const int numChannels = getTotalNumOutputChannels();
     const int numSamples = buffer.getNumSamples();
 
+   if (auto bpmFromHost = *getPlayHead()->getPosition()->getBpm())
+        bpm = bpmFromHost;
 
-  /*  if (auto bpmFromHost = *getPlayHead()->getPosition()->getBpm())
-        bpm = bpmFromHost;*/
-
-    /*float delayTimeBeat = 60000.0f / bpm;*/
+    float delayTimeBeat = 60.0f / bpm;
 
     float delayInSamples = delayTime * processSpec.sampleRate;
 
@@ -175,6 +177,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayEffectAudioProcessor::c
     params.push_back(std::make_unique <juce::AudioParameterFloat>("dryWet", "Dry/Wet", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.1f }, 0.5f));
     params.push_back(std::make_unique <juce::AudioParameterFloat>("delayTime", "Delay Time", juce::NormalisableRange<float> { 0.01f, 2.0f, 0.1f }, 0.2f));
     params.push_back(std::make_unique <juce::AudioParameterFloat>("feedback", "Feedback", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.1f }, 0.5f));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("delayTimeType", "Delay Time Type", juce::StringArray{ "SEC", "BEAT", "TRIP", "DOT" }, 0));
     return { params.begin(), params.end() };
 }
 
@@ -187,6 +190,26 @@ void DelayEffectAudioProcessor::parameterChanged(const juce::String& parameterID
     else if (parameterID == "delayTime")
     {
         delayTime = newValue;
+    }
+    else if (parameterID == "delayTimeType") 
+    {
+        delayTimeType = [this, newValue]
+            {
+                switch ((int)newValue)
+                {
+                case 0:
+                    return "SEC";
+                case 1:
+                    return "BEAT";
+                case 2:
+                    return "TRIP";
+                case 3:
+                    return "DOT";
+                default:
+                    return "SEC";
+                }
+            }();
+        DBG(delayTimeType);
     }
     else 
     {

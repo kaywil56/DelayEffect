@@ -61,7 +61,8 @@ private:
     float dryWet{ 0.5f };
     float feedback{ 0.5f };
     float delayTime{ 0.5f };
-    double bpm{ 120 };
+    float bpm{ 120.0f };
+    juce::String delayTimeType{ "SEC" };
     juce::dsp::ProcessSpec processSpec;
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> delayLine;
     //==============================================================================
