@@ -1,30 +1,28 @@
-import { useState, useEffect, ChangeEvent } from "react"
+import { useState, useEffect, ChangeEvent, MouseEvent } from "react"
 import * as Juce from "juce-framework-frontend";
 
 interface Props {
   identifier: string,
-  title: string,
   controlParameterIndexAnnotation: string,
-  min: number,
-  max: number
 }
 
-const Slider = ({ identifier, title, controlParameterIndexAnnotation, min, max }: Props) => {
+const Slider = ({ identifier, controlParameterIndexAnnotation }: Props) => {
   const sliderState = Juce.getSliderState(identifier)
 
-  const [value, setValue] = useState<any>(sliderState.getNormalisedValue())
-  const [properties, setProperties] = useState<any>(sliderState.properties)
+  const [value, setValue] = useState<string>(sliderState.getNormalisedValue())
+  const [properties, setProperties] = useState<string>(sliderState.properties)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    sliderState.setNormalisedValue(parseFloat(e.target.value).toFixed(2));
-    setValue(parseFloat(e.target.value).toFixed(2));
+    sliderState.setNormalisedValue(e.target.value);
+    setValue(e.target.value);
   };
 
-  const mouseDown = () => {
+  const mouseDown = (): void => {
     sliderState.sliderDragStarted();
   };
 
-  const changeCommitted = () => {
+  const changeCommitted = (e: MouseEvent<HTMLInputElement>): void => {
+    sliderState.setNormalisedValue(e.currentTarget.value);
     sliderState.sliderDragEnded();
   };
 
@@ -46,22 +44,22 @@ const Slider = ({ identifier, title, controlParameterIndexAnnotation, min, max }
     {...{
       [controlParameterIndexAnnotation]: sliderState.properties.paramaterIndex
     }}
-    className="flex items-center justify-evenly flex-col gap-2"
+    className="flex items-center justify-evenly flex-col gap-2 w-full"
   >
-    <label className="input">
-      <span className="label">{title}</span>
+    <label className="input w-full">
+      <span className="label">{properties.name}</span>
       <input
         type="range"
-        aria-label={title}
-        min={min}
-        max={max}
+        aria-label={properties.name}
+        min={0}
+        max={1}
         step={1 / (properties.numSteps - 1)}
         value={value}
         onChange={handleChange}
         onMouseDown={mouseDown}
         onMouseUp={changeCommitted}
         className="range" />
-      <span className="label">{value}</span>
+      <span className="label">{parseFloat(sliderState.getScaledValue()).toFixed(2)}</span>
     </label>
   </div>
 }
