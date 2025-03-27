@@ -26,8 +26,15 @@ function App() {
   }
 
   const convertValueToFraction = (value: string): string => {
-    const fractionValues = ["1", "2", "4", "8", "16"]
-    return `1/${fractionValues[Number(value)]}`
+    const fractionValues: string[] = ["1", "2", "4", "8", "16"]
+    let suffix: string = ""
+    if (comboBoxValue == 2) {
+      suffix = "t"
+    }
+    else if(comboBoxValue == 3){
+      suffix = "d"
+    }
+    return `1/${fractionValues[Number(value)]}${suffix}`
   }
 
   return (

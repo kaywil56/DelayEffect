@@ -20,6 +20,10 @@ const ComboBox = ({ identifier, controlParameterIndexAnnotation, value, setValue
     };
 
     useEffect(() => {
+        console.log(properties)
+    }, [properties])
+
+    useEffect(() => {
         const valueListenerId = comboBoxState.valueChangedEvent.addListener(() => {
             setValue(comboBoxState?.getChoiceIndex());
         })

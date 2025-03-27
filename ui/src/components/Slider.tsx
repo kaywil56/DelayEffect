@@ -8,7 +8,7 @@ interface Props {
   displayWithUnit: (value: string) => string
 }
 
-const Slider = ({ identifier, controlParameterIndexAnnotation, displayWithUnit}: Props) => {
+const Slider = ({ identifier, controlParameterIndexAnnotation, displayWithUnit }: Props) => {
   const sliderState = Juce.getSliderState(identifier)
 
   const [value, setValue] = useState<string>(sliderState.getNormalisedValue())
@@ -18,6 +18,10 @@ const Slider = ({ identifier, controlParameterIndexAnnotation, displayWithUnit}:
     sliderState.setNormalisedValue(e.target.value);
     setValue(e.target.value);
   };
+
+  useEffect(() => {
+    console.log(properties)
+  }, [properties])
 
   const mouseDown = (): void => {
     sliderState.sliderDragStarted();
