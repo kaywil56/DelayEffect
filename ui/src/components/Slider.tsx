@@ -9,8 +9,8 @@ interface Props {
 const Slider = ({ identifier, controlParameterIndexAnnotation }: Props) => {
   const sliderState = Juce.getSliderState(identifier)
 
-  const [value, setValue] = useState<string>(sliderState.getNormalisedValue())
-  const [properties, setProperties] = useState<string>(sliderState.properties)
+  const [value, setValue] = useState<string>(sliderState?.getNormalisedValue())
+  const [properties, setProperties] = useState<string>(sliderState?.properties)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     sliderState.setNormalisedValue(e.target.value);
@@ -28,17 +28,17 @@ const Slider = ({ identifier, controlParameterIndexAnnotation }: Props) => {
 
   useEffect(() => {
     const valueListenerId = sliderState.valueChangedEvent.addListener(() => {
-      setValue(sliderState.getNormalisedValue());
+      setValue(sliderState?.getNormalisedValue());
     });
     const propertiesListenerId = sliderState.propertiesChangedEvent.addListener(
-      () => setProperties(sliderState.properties)
+      () => setProperties(sliderState?.properties)
     );
 
     return function cleanup() {
       sliderState.valueChangedEvent.removeListener(valueListenerId);
       sliderState.propertiesChangedEvent.removeListener(propertiesListenerId);
     };
-  });
+  }, []);
 
   return <div
     {...{
@@ -47,13 +47,13 @@ const Slider = ({ identifier, controlParameterIndexAnnotation }: Props) => {
     className="flex items-center justify-evenly flex-col gap-2 w-full"
   >
     <label className="input w-full">
-      <span className="label">{properties.name}</span>
+      <span className="label">{properties?.name}</span>
       <input
         type="range"
-        aria-label={properties.name}
+        aria-label={properties?.name}
         min={0}
         max={1}
-        step={1 / (properties.numSteps - 1)}
+        step={1 / (properties?.numSteps - 1)}
         value={value}
         onChange={handleChange}
         onMouseDown={mouseDown}

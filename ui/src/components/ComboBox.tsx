@@ -4,14 +4,14 @@ import * as Juce from "juce-framework-frontend";
 interface Props {
     identifier: string,
     controlParameterIndexAnnotation: string,
+    value: number,
+    setValue: (value: number) => void
 }
 
-const ComboBox = ({ identifier, controlParameterIndexAnnotation }: Props) => {
+const ComboBox = ({ identifier, controlParameterIndexAnnotation, value, setValue }: Props) => {
 
     const comboBoxState = Juce.getComboBoxState(identifier);
-
-    const [value, setValue] = useState<number>(comboBoxState.getChoiceIndex());
-    const [properties, setProperties] = useState<any>(comboBoxState.properties);
+    const [properties, setProperties] = useState<any>(comboBoxState?.properties);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         comboBoxState.setChoiceIndex(e.target.value);
@@ -20,7 +20,7 @@ const ComboBox = ({ identifier, controlParameterIndexAnnotation }: Props) => {
 
     useEffect(() => {
         const valueListenerId = comboBoxState.valueChangedEvent.addListener(() => {
-            setValue(comboBoxState.getChoiceIndex());
+            setValue(comboBoxState?.getChoiceIndex());
         })
         const propertiesListenerId =
             comboBoxState.propertiesChangedEvent.addListener(() => {
@@ -39,10 +39,10 @@ const ComboBox = ({ identifier, controlParameterIndexAnnotation }: Props) => {
                 comboBoxState.properties.parameterIndex,
         }}
     >
-        {properties.choices.map((choice: string, i: number) => (
+        {properties?.choices.map((choice: string, i: number) => (
             <label key={i} className="input join-item">
                 <span className="label">{choice}</span>
-                <input checked={i == Number(value)} onChange={handleChange} type="radio" name="radio-1" className="radio" value={i} />
+                <input checked={i == value} onChange={handleChange} type="radio" name="radio-1" className="radio" value={i} />
             </label>
         ))}
     </div>

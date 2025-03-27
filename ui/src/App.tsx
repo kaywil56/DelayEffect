@@ -1,10 +1,12 @@
 import Slider from "./components/Slider"
 import ComboBox from "./components/ComboBox";
 import * as Juce from "juce-framework-frontend"
+import { useState } from "react";
 
 const controlParameterIndexAnnotation = "controlparameterindex";
 
 function App() {
+  const [comboBoxValue, setComboBoxValue] = useState<number>(0);
   const controlParameterIndexUpdater = new Juce.ControlParameterIndexUpdater(
     controlParameterIndexAnnotation
   );
@@ -22,10 +24,16 @@ function App() {
         <Slider
           identifier="feedback"
           controlParameterIndexAnnotation={controlParameterIndexAnnotation} />
-        <Slider
+        {comboBoxValue == 0 ? (<Slider
           identifier="delayTime"
-          controlParameterIndexAnnotation={controlParameterIndexAnnotation} />
+          controlParameterIndexAnnotation={controlParameterIndexAnnotation} />) : (
+          <Slider
+            identifier="delayTimeFraction"
+            controlParameterIndexAnnotation={controlParameterIndexAnnotation} />
+        )}
         <ComboBox
+          value={comboBoxValue}
+          setValue={setComboBoxValue}
           identifier="delayTimeType"
           controlParameterIndexAnnotation={controlParameterIndexAnnotation} />
       </div>
