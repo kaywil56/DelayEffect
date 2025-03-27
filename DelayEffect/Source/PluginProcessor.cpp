@@ -20,6 +20,7 @@ DelayEffectAudioProcessor::DelayEffectAudioProcessor() :
     audioProcessorValueTreeState.addParameterListener("feedback", this);
     audioProcessorValueTreeState.addParameterListener("delayTime", this);
     audioProcessorValueTreeState.addParameterListener("delayTimeType", this);
+    audioProcessorValueTreeState.addParameterListener("delayTimeFraction", this);
 }
 
 DelayEffectAudioProcessor::~DelayEffectAudioProcessor()
@@ -118,17 +119,34 @@ void DelayEffectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 {
     juce::ScopedNoDenormals noDenormals;
 
-    return;
-
     const int numChannels = getTotalNumOutputChannels();
     const int numSamples = buffer.getNumSamples();
 
-   if (auto bpmFromHost = *getPlayHead()->getPosition()->getBpm())
+    if (auto bpmFromHost = *getPlayHead()->getPosition()->getBpm())
         bpm = bpmFromHost;
+    float delayTimeWholeNote = (60.0f / bpm) * 4;
+    
+    float noteDuration;
+    switch ((int)delayTimeTypeIndex) {
+    case 0:
+            // Seconds
+        noteDuration = delayTime;
+        break;
+    case 1: // Normal
+        noteDuration = delayTimeWholeNote / delayTimeFractionValues[(int)delayTimeFractionIndex];
+        break;
+    case 2: // Triplet
+        noteDuration = (delayTimeWholeNote / delayTimeFractionValues[(int)delayTimeFractionIndex]) * (2.0f / 3.0f);
+        break;
+    case 3: // Dotted
+        noteDuration = (delayTimeWholeNote / delayTimeFractionValues[(int)delayTimeFractionIndex]) * 1.5f;
+        break;
+    default:
+        noteDuration = delayTime;
+        break;
+    }
 
-    float delayTimeBeat = 60.0f / bpm;
-
-    float delayInSamples = delayTime * processSpec.sampleRate;
+    float delayInSamples = noteDuration * processSpec.sampleRate;
 
     for (int channel = 0; channel < numChannels; ++channel)
     {
@@ -176,8 +194,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayEffectAudioProcessor::c
 
     params.push_back(std::make_unique <juce::AudioParameterFloat>("dryWet", "Dry/Wet", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.1f }, 0.5f));
     params.push_back(std::make_unique <juce::AudioParameterFloat>("delayTime", "Delay Time", juce::NormalisableRange<float> { 0.01f, 2.0f, 0.1f }, 0.2f));
+    params.push_back(std::make_unique <juce::AudioParameterFloat>("delayTimeFraction", "Delay Time Fraction", juce::NormalisableRange<float> { 0.0f, 4.0f, 1.0f }, 0.0f));
     params.push_back(std::make_unique <juce::AudioParameterFloat>("feedback", "Feedback", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.1f }, 0.5f));
-    params.push_back(std::make_unique<juce::AudioParameterChoice>("delayTimeType", "Delay Time Type", juce::StringArray{ "SEC", "BEAT", "TRIP", "DOT" }, 0));
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("delayTimeType", "Delay Time Type", juce::StringArray{ "SEC", "NRM", "TRIP", "DOT" }, 0));
     return { params.begin(), params.end() };
 }
 
@@ -193,23 +212,11 @@ void DelayEffectAudioProcessor::parameterChanged(const juce::String& parameterID
     }
     else if (parameterID == "delayTimeType") 
     {
-        delayTimeType = [this, newValue]
-            {
-                switch ((int)newValue)
-                {
-                case 0:
-                    return "SEC";
-                case 1:
-                    return "BEAT";
-                case 2:
-                    return "TRIP";
-                case 3:
-                    return "DOT";
-                default:
-                    return "SEC";
-                }
-            }();
-        DBG(delayTimeType);
+        delayTimeTypeIndex = newValue;
+    }
+    else if (parameterID == "delayTimeFraction")
+    {
+        delayTimeFractionIndex = newValue;
     }
     else 
     {

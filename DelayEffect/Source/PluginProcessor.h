@@ -62,7 +62,9 @@ private:
     float feedback{ 0.5f };
     float delayTime{ 0.5f };
     float bpm{ 120.0f };
-    juce::String delayTimeType{ "SEC" };
+    float delayTimeTypeIndex{ 0.0f };
+    float delayTimeFractionIndex{ 0.0f };
+    float delayTimeFractionValues[5] = {1.0f, 2.0f, 4.0f, 8.0f, 16.0f};
     juce::dsp::ProcessSpec processSpec;
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> delayLine;
     //==============================================================================

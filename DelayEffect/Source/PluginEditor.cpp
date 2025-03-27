@@ -17,6 +17,7 @@ DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor(DelayEffectAudi
     delayTimeSliderRelay("delayTime"),
     feedbackSliderRelay("feedback"),
     delayTimeTypeComboBoxRelay("delayTimeType"),
+    delayTimeFractionSliderRelay("delayTimeFraction"),
     webBrowserComponent(
         juce::WebBrowserComponent::Options{}
         .withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
@@ -27,6 +28,7 @@ DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor(DelayEffectAudi
         .withOptionsFrom(delayTimeSliderRelay)
         .withOptionsFrom(feedbackSliderRelay)
         .withOptionsFrom(delayTimeTypeComboBoxRelay)
+        .withOptionsFrom(delayTimeFractionSliderRelay)
         .withOptionsFrom(controlParameterIndexReceiver)
     ),
     dryWetAttachment(
@@ -47,6 +49,11 @@ DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor(DelayEffectAudi
     delayTimeTypeAttachment(
         *audioProcessor.audioProcessorValueTreeState.getParameter("delayTimeType"),
         delayTimeTypeComboBoxRelay,
+        audioProcessor.audioProcessorValueTreeState.undoManager
+    ),
+    delayTimeFractionAttachment(
+        *audioProcessor.audioProcessorValueTreeState.getParameter("delayTimeFraction"),
+        delayTimeFractionSliderRelay,
         audioProcessor.audioProcessorValueTreeState.undoManager
     )
 {
