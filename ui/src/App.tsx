@@ -15,21 +15,42 @@ function App() {
     controlParameterIndexUpdater.handleMouseMove(event);
   });
 
+  const convertValueToPercentage = (value: string): string => {
+    return `${(Math.round(Number(value) * 100))}%`;
+  }
+
+  const convertValueToSeconds = (value: string): string => {
+    return `${(parseFloat(value).toFixed(2))} Sec`;
+  }
+
+  const convertValueToFraction = (value: string): string => {
+    const fractionValues = ["1", "2", "4", "8", "16"]
+    return `1/${fractionValues[Number(value)]}`
+  }
+
   return (
     <main className="h-screen w-screen flex items-center justify-center flex-col">
       <div className="h-fit flex items-center justify-evenly gap-4 flex-col">
         <Slider
           identifier="dryWet"
-          controlParameterIndexAnnotation={controlParameterIndexAnnotation} />
+          controlParameterIndexAnnotation={controlParameterIndexAnnotation}
+          displayWithUnit={convertValueToPercentage}
+        />
         <Slider
           identifier="feedback"
-          controlParameterIndexAnnotation={controlParameterIndexAnnotation} />
+          controlParameterIndexAnnotation={controlParameterIndexAnnotation}
+          displayWithUnit={convertValueToPercentage}
+        />
         {comboBoxValue == 0 ? (<Slider
           identifier="delayTime"
-          controlParameterIndexAnnotation={controlParameterIndexAnnotation} />) : (
+          controlParameterIndexAnnotation={controlParameterIndexAnnotation}
+          displayWithUnit={convertValueToSeconds}
+        />) : (
           <Slider
             identifier="delayTimeFraction"
-            controlParameterIndexAnnotation={controlParameterIndexAnnotation} />
+            controlParameterIndexAnnotation={controlParameterIndexAnnotation}
+            displayWithUnit={convertValueToFraction}
+          />
         )}
         <ComboBox
           value={comboBoxValue}
