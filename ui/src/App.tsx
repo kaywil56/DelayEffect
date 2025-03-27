@@ -1,7 +1,7 @@
 import Slider from "./components/Slider"
 import ComboBox from "./components/ComboBox";
 import * as Juce from "juce-framework-frontend"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const controlParameterIndexAnnotation = "controlparameterindex";
 
@@ -11,9 +11,11 @@ function App() {
     controlParameterIndexAnnotation
   );
 
-  document.addEventListener("mousemove", (event) => {
-    controlParameterIndexUpdater.handleMouseMove(event);
-  });
+  useEffect(() => {
+    document.addEventListener("mousemove", (event) => {
+      controlParameterIndexUpdater.handleMouseMove(event);
+    });
+  }, [])
 
   const convertValueToPercentage = (value: string): string => {
     return `${(Math.round(Number(value) * 100))}%`;

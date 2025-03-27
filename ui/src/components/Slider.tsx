@@ -1,5 +1,6 @@
 import { useState, useEffect, ChangeEvent, MouseEvent } from "react"
 import * as Juce from "juce-framework-frontend";
+import { ISliderStateProperties } from "../interfaces/ISliderStateProperties";
 
 interface Props {
   identifier: string,
@@ -11,7 +12,7 @@ const Slider = ({ identifier, controlParameterIndexAnnotation, displayWithUnit}:
   const sliderState = Juce.getSliderState(identifier)
 
   const [value, setValue] = useState<string>(sliderState.getNormalisedValue())
-  const [properties, setProperties] = useState<string>(sliderState.properties)
+  const [properties, setProperties] = useState<ISliderStateProperties>(sliderState.properties)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     sliderState.setNormalisedValue(e.target.value);
@@ -43,7 +44,7 @@ const Slider = ({ identifier, controlParameterIndexAnnotation, displayWithUnit}:
 
   return <div
     {...{
-      [controlParameterIndexAnnotation]: sliderState.properties.paramaterIndex
+      [controlParameterIndexAnnotation]: sliderState?.properties?.paramaterIndex
     }}
     className="flex items-center justify-evenly flex-col gap-2 w-full"
   >
@@ -51,7 +52,7 @@ const Slider = ({ identifier, controlParameterIndexAnnotation, displayWithUnit}:
       <span className="label">{properties.name}</span>
       <input
         type="range"
-        aria-label={properties.name}
+        aria-label={sliderState.name}
         min={0}
         max={1}
         step={1 / (properties.numSteps - 1)}

@@ -1,5 +1,6 @@
 import { useState, useEffect, ChangeEvent } from "react"
 import * as Juce from "juce-framework-frontend";
+import { IComboBoxProperties } from "../interfaces/IComboBoxProperties";
 
 interface Props {
     identifier: string,
@@ -11,7 +12,7 @@ interface Props {
 const ComboBox = ({ identifier, controlParameterIndexAnnotation, value, setValue }: Props) => {
 
     const comboBoxState = Juce.getComboBoxState(identifier);
-    const [properties, setProperties] = useState<any>(comboBoxState?.properties);
+    const [properties, setProperties] = useState<IComboBoxProperties>(comboBoxState.properties);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         comboBoxState.setChoiceIndex(e.target.value);
