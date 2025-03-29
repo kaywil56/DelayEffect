@@ -20,12 +20,10 @@ const ComboBox = ({ identifier, controlParameterIndexAnnotation, value, setValue
     };
 
     useEffect(() => {
-        console.log(properties)
-    }, [properties])
-
-    useEffect(() => {
+        setProperties(comboBoxState.properties)
+        setValue(comboBoxState.getChoiceIndex())
         const valueListenerId = comboBoxState.valueChangedEvent.addListener(() => {
-            setValue(comboBoxState?.getChoiceIndex());
+            setValue(comboBoxState.getChoiceIndex());
         })
         const propertiesListenerId =
             comboBoxState.propertiesChangedEvent.addListener(() => {
@@ -44,10 +42,10 @@ const ComboBox = ({ identifier, controlParameterIndexAnnotation, value, setValue
                 comboBoxState.properties.parameterIndex,
         }}
     >
-        {properties?.choices.map((choice: string, i: number) => (
+        {properties.choices.map((choice: string, i: number) => (
             <label key={i} className="input join-item">
-                <span className="label">{choice}</span>
-                <input checked={i == value} onChange={handleChange} type="radio" name="radio-1" className="radio" value={i} />
+                <span className="label">{choice ? choice : i}</span>
+                <input checked={i == value} onChange={handleChange} type="radio" name={`radio-${i}`} className="radio" value={i} />
             </label>
         ))}
     </div>

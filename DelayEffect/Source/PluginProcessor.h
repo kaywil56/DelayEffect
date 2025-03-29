@@ -53,11 +53,23 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    juce::AudioProcessorValueTreeState::ParameterLayout createParams();
     juce::AudioProcessorValueTreeState audioProcessorValueTreeState;
     void parameterChanged(const juce::String& parameterID, float newValue) override;
+    juce::AudioVisualiserComponent waveFormViewer;
 
 private:
+    struct Parameters
+    {
+        juce::AudioParameterFloat* dryWet{ nullptr };
+        juce::AudioParameterFloat* delayTime{ nullptr };
+        juce::AudioParameterFloat* delayTimeFraction{ nullptr };
+        juce::AudioParameterFloat* feedback{ nullptr };
+        juce::AudioParameterChoice* delayTimeType{ nullptr };
+    };
+
+    juce::AudioProcessorValueTreeState::ParameterLayout createParams(Parameters&);
+    Parameters parameters;
+
     float dryWet{ 0.5f };
     float feedback{ 0.5f };
     float delayTime{ 0.5f };

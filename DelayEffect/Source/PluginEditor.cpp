@@ -57,8 +57,10 @@ DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor(DelayEffectAudi
         audioProcessor.audioProcessorValueTreeState.undoManager
     )
 {
+    addAndMakeVisible(audioProcessor.waveFormViewer);
     addAndMakeVisible(webBrowserComponent);
-    webBrowserComponent.goToURL("localhost:5173");
+    audioProcessor.waveFormViewer.setColours(juce::Colours::black, juce::Colours::yellow.withAlpha(0.5f));
+    webBrowserComponent.goToURL(LOCAL_DEV_SERVER_ADDRESS);
     setSize(700, 600);
 }
 
@@ -73,8 +75,6 @@ void DelayEffectAudioProcessorEditor::paint (juce::Graphics& g)
 
 void DelayEffectAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
-        // subcomponents in your editor..
-    webBrowserComponent.setBounds(getLocalBounds());
+    audioProcessor.waveFormViewer.setBounds(0, 0, getLocalBounds().getWidth(), 100);
+    webBrowserComponent.setBounds(getLocalBounds().withTrimmedTop(100));
 }

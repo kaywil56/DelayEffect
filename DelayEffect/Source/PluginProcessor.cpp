@@ -14,13 +14,17 @@ DelayEffectAudioProcessor::DelayEffectAudioProcessor() :
     AudioProcessor(BusesProperties()
         .withInput("Input", juce::AudioChannelSet::stereo())
         .withOutput("Output", juce::AudioChannelSet::stereo())),
-    audioProcessorValueTreeState(*this, nullptr, "Params", createParams())
+    audioProcessorValueTreeState(*this, nullptr, "Params", createParams(parameters)),
+    waveFormViewer(1)
 {
     audioProcessorValueTreeState.addParameterListener("dryWet", this);
     audioProcessorValueTreeState.addParameterListener("feedback", this);
     audioProcessorValueTreeState.addParameterListener("delayTime", this);
     audioProcessorValueTreeState.addParameterListener("delayTimeType", this);
     audioProcessorValueTreeState.addParameterListener("delayTimeFraction", this);
+
+    waveFormViewer.setRepaintRate(30);
+    waveFormViewer.setBufferSize(256);
 }
 
 DelayEffectAudioProcessor::~DelayEffectAudioProcessor()
@@ -124,8 +128,9 @@ void DelayEffectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
     if (auto bpmFromHost = *getPlayHead()->getPosition()->getBpm())
         bpm = bpmFromHost;
+
     float delayTimeWholeNote = (60.0f / bpm) * 4;
-    
+
     float noteDuration;
     switch ((int)delayTimeTypeIndex) {
     case 0:
@@ -161,6 +166,8 @@ void DelayEffectAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
             channelData[sample] = inputSample * (1.0f - dryWet) + delayedSample * dryWet;
         }
     }
+
+    waveFormViewer.pushBuffer(buffer);
 }
 
 //==============================================================================
@@ -188,16 +195,61 @@ void DelayEffectAudioProcessor::setStateInformation (const void* data, int sizeI
     // whose contents will have been created by the getStateInformation() call.
 }
 
-juce::AudioProcessorValueTreeState::ParameterLayout DelayEffectAudioProcessor::createParams()
+juce::AudioProcessorValueTreeState::ParameterLayout DelayEffectAudioProcessor::createParams(Parameters& parameters)
 {
-    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    params.push_back(std::make_unique <juce::AudioParameterFloat>("dryWet", "Dry/Wet", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.1f }, 0.5f));
-    params.push_back(std::make_unique <juce::AudioParameterFloat>("delayTime", "Delay Time", juce::NormalisableRange<float> { 0.01f, 2.0f, 0.1f }, 0.2f));
-    params.push_back(std::make_unique <juce::AudioParameterFloat>("delayTimeFraction", "Delay Time Fraction", juce::NormalisableRange<float> { 0.0f, 4.0f, 1.0f }, 0.0f));
-    params.push_back(std::make_unique <juce::AudioParameterFloat>("feedback", "Feedback", juce::NormalisableRange<float> { 0.0f, 1.0f, 0.1f }, 0.5f));
-    params.push_back(std::make_unique<juce::AudioParameterChoice>("delayTimeType", "Delay Time Type", juce::StringArray{ "SEC", "NRM", "TRIP", "DOT" }, 0));
-    return { params.begin(), params.end() };
+    {
+        auto parameter = std::make_unique <juce::AudioParameterFloat>(
+            "dryWet",
+            "Dry/Wet",
+            juce::NormalisableRange<float> { 0.0f, 1.0f, 0.1f },
+            0.5f
+        );
+        parameters.dryWet = parameter.get();
+        layout.add(std::move(parameter));
+    }
+    {
+        auto parameter = std::make_unique <juce::AudioParameterFloat>(
+            "delayTime",
+            "Delay Time",
+            juce::NormalisableRange<float> { 0.01f, 2.0f, 0.1f },
+            0.2f
+        );
+        parameters.delayTime = parameter.get();
+        layout.add(std::move(parameter));
+    }
+    {
+        auto parameter = std::make_unique <juce::AudioParameterFloat>(
+            "delayTimeFraction",
+            "Delay Time Fraction",
+            juce::NormalisableRange<float> { 0.0f, 4.0f, 1.0f },
+            0.0f
+        );
+        parameters.delayTimeFraction = parameter.get();
+        layout.add(std::move(parameter));
+    }
+    {
+        auto parameter = std::make_unique<juce::AudioParameterFloat>(
+            "feedback",
+            "Feedback",
+            juce::NormalisableRange<float> { 0.0f, 1.0f, 0.1f },
+            0.5f
+        );
+        parameters.feedback = parameter.get();
+        layout.add(std::move(parameter));
+    }
+    {
+        auto parameter = std::make_unique<juce::AudioParameterChoice>(
+            "delayTimeType",
+            "Delay Time Type",
+            juce::StringArray{ "SEC", "NRM", "TRIP", "DOT" },
+            0
+        );
+        parameters.delayTimeType = parameter.get();
+        layout.add(std::move(parameter));
+    }
+    return layout;
 }
 
 void DelayEffectAudioProcessor::parameterChanged(const juce::String& parameterID, float newValue)

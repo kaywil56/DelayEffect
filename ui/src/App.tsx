@@ -17,15 +17,15 @@ function App() {
     });
   }, [])
 
-  const convertValueToPercentage = (value: string): string => {
-    return `${(Math.round(Number(value) * 100))}%`;
+  const convertValueToPercentage = (value: number): string => {
+    return `${(Math.round(value * 100))}%`;
   }
 
-  const convertValueToSeconds = (value: string): string => {
-    return `${(parseFloat(value).toFixed(2))} Sec`;
+  const convertValueToSeconds = (value: number): string => {
+    return `${(parseFloat(String(value)).toFixed(2))} Sec`;
   }
 
-  const convertValueToFraction = (value: string): string => {
+  const convertValueToFraction = (value: number): string => {
     const fractionValues: string[] = ["1", "2", "4", "8", "16"]
     let suffix: string = ""
     if (comboBoxValue == 2) {
@@ -34,7 +34,7 @@ function App() {
     else if(comboBoxValue == 3){
       suffix = "d"
     }
-    return `1/${fractionValues[Number(value)]}${suffix}`
+    return `1/${fractionValues[value]}${suffix}`
   }
 
   return (
@@ -44,11 +44,13 @@ function App() {
           identifier="dryWet"
           controlParameterIndexAnnotation={controlParameterIndexAnnotation}
           displayWithUnit={convertValueToPercentage}
+          key="dryWet"
         />
         <Slider
           identifier="feedback"
           controlParameterIndexAnnotation={controlParameterIndexAnnotation}
           displayWithUnit={convertValueToPercentage}
+          key="feedback"
         />
         {comboBoxValue == 0 ? (<Slider
           identifier="delayTime"

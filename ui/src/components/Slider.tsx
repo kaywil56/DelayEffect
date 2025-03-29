@@ -5,23 +5,18 @@ import { ISliderStateProperties } from "../interfaces/ISliderStateProperties";
 interface Props {
   identifier: string,
   controlParameterIndexAnnotation: string,
-  displayWithUnit: (value: string) => string
+  displayWithUnit: (value: number) => string
 }
 
 const Slider = ({ identifier, controlParameterIndexAnnotation, displayWithUnit }: Props) => {
   const sliderState = Juce.getSliderState(identifier)
-
-  const [value, setValue] = useState<string>(sliderState.getNormalisedValue())
+  const [value, setValue] = useState<number>(sliderState.getNormalisedValue())
   const [properties, setProperties] = useState<ISliderStateProperties>(sliderState.properties)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     sliderState.setNormalisedValue(e.target.value);
-    setValue(e.target.value);
+    setValue(Number(e.target.value));
   };
-
-  useEffect(() => {
-    console.log(properties)
-  }, [properties])
 
   const mouseDown = (): void => {
     sliderState.sliderDragStarted();
@@ -33,22 +28,26 @@ const Slider = ({ identifier, controlParameterIndexAnnotation, displayWithUnit }
   };
 
   useEffect(() => {
+    setProperties(sliderState.properties)
+    setValue(sliderState.getNormalisedValue())
+
     const valueListenerId = sliderState.valueChangedEvent.addListener(() => {
       setValue(sliderState.getNormalisedValue());
     });
-    const propertiesListenerId = sliderState.propertiesChangedEvent.addListener(
-      () => setProperties(sliderState.properties)
-    );
+    const propertiesListenerId = sliderState.propertiesChangedEvent.addListener(() => { 
+      setProperties(sliderState.properties) 
+      console.log("change", sliderState.properties)
+    })
 
     return function cleanup() {
       sliderState.valueChangedEvent.removeListener(valueListenerId);
       sliderState.propertiesChangedEvent.removeListener(propertiesListenerId);
-    };
-  }, []);
+    }
+  }, [])
 
   return <div
     {...{
-      [controlParameterIndexAnnotation]: sliderState?.properties?.paramaterIndex
+      [controlParameterIndexAnnotation]: sliderState.properties.parameterIndex
     }}
     className="flex items-center justify-evenly flex-col gap-2 w-full"
   >

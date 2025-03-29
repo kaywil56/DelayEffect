@@ -27,6 +27,7 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
+    const juce::String LOCAL_DEV_SERVER_ADDRESS{ "http://localhost:5173" };
     DelayEffectAudioProcessor& audioProcessor;
     juce::WebSliderRelay dryWetSliderRelay;
     juce::WebSliderRelay delayTimeSliderRelay;
