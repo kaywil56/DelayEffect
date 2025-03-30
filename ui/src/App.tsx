@@ -40,11 +40,10 @@ function App() {
   return (
     <main className="h-screen w-screen flex items-center justify-center flex-col">
       <div className="divider"></div>
-      <div className="flex justify-center items-center w-full">
+      <div className="flex justify-evenly items-center w-full">
         <div style={{
-          writingMode: "vertical-rl",
-          fontSize: "9vw"
-        }} className="text-primary-content grid place-content-center font-black">
+          writingMode: "vertical-rl"
+        }} className="text-primary-content grid place-content-center font-black text-6xl">
           DELAY
         </div>
         <div className="h-fit flex items-center justify-evenly gap-4 flex-col">
