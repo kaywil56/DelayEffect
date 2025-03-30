@@ -44,7 +44,7 @@ const ComboBox = ({ identifier, controlParameterIndexAnnotation, value, setValue
     >
         {properties.choices.map((choice: string, i: number) => (
             <label key={i} className="input join-item">
-                <span className="label">{choice ? choice : i}</span>
+                <span className="label text-primary font-bold">{choice}</span>
                 <input checked={i == value} onChange={handleChange} type="radio" name={`radio-${i}`} className="radio" value={i} />
             </label>
         ))}

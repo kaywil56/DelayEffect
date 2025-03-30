@@ -52,7 +52,7 @@ const Slider = ({ identifier, controlParameterIndexAnnotation, displayWithUnit }
     className="flex items-center justify-evenly flex-col gap-2 w-full"
   >
     <label className="input w-full">
-      <span className="label">{properties.name}</span>
+      <span className="label text-primary font-bold">{properties.name}</span>
       <input
         type="range"
         aria-label={sliderState.name}
@@ -64,7 +64,7 @@ const Slider = ({ identifier, controlParameterIndexAnnotation, displayWithUnit }
         onMouseDown={mouseDown}
         onMouseUp={changeCommitted}
         className="range" />
-      <span className="label">{displayWithUnit(sliderState.getScaledValue())}</span>
+      <span className="label text-primary font-bold">{displayWithUnit(sliderState.getScaledValue())}</span>
     </label>
   </div>
 }

@@ -1,5 +1,6 @@
 import Slider from "./components/Slider"
 import ComboBox from "./components/ComboBox";
+import ToggleButton from "./components/ToggleButton";
 import * as Juce from "juce-framework-frontend"
 import { useState, useEffect } from "react";
 
@@ -43,10 +44,13 @@ function App() {
       <div className="flex justify-evenly items-center w-full">
         <div style={{
           writingMode: "vertical-rl"
-        }} className="text-primary-content grid place-content-center font-black text-6xl">
+        }} className="text-primary-content grid place-content-center font-black text-7xl">
           DELAY
         </div>
         <div className="h-fit flex items-center justify-evenly gap-4 flex-col">
+          <div className="flex items-center justify-end w-full">
+            <ToggleButton identifier="isPingPong" controlParameterIndexAnnotation={controlParameterIndexAnnotation} />
+          </div>
           <Slider
             identifier="dryWet"
             controlParameterIndexAnnotation={controlParameterIndexAnnotation}
@@ -78,7 +82,9 @@ function App() {
         </div>
       </div>
       <div className="divider"></div>
-      Made By Kaylem
+      <div className="font-bold text-primary grid place-items-center">
+        Made by Company.
+      </div>
     </main>
   )
 }
