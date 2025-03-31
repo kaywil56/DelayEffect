@@ -13,7 +13,7 @@
 DelayEffectAudioProcessor::DelayEffectAudioProcessor() :
 	AudioProcessor(BusesProperties()
 		.withInput("Input", juce::AudioChannelSet::stereo())
-		.withOutput("Output", juce::AudioChannelSet::stereo())),
+		.withOutput("Output",juce::AudioChannelSet::stereo())),
 	audioProcessorValueTreeState(*this, nullptr, "Params", createParams(parameters)),
 	waveFormViewer(1)
 {
@@ -102,7 +102,7 @@ void DelayEffectAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
 	processSpec.numChannels = getTotalNumOutputChannels();
 
 	delayLine.reset();
-	delayLine.setMaximumDelayInSamples(sampleRate * 2.0f);
+	delayLine.setMaximumDelayInSamples(sampleRate * 3.0f);
 	delayLine.prepare(processSpec);
 }
 
@@ -127,16 +127,23 @@ void DelayEffectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 	const int numChannels = getTotalNumOutputChannels();
 	const int numSamples = buffer.getNumSamples();
 
-	//    //if (auto bpmFromHost = *getPlayHead()->getPosition()->getBpm())
-//    //    bpm = bpmFromHost;
+	for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
+		buffer.clear(i, 0, buffer.getNumSamples());
+	
+	if (auto bpmFromHost = getPlayHead())
+	{
+		auto position = bpmFromHost->getPosition();
+		if (position && position->getBpm())
+		{
+			bpm = *position->getBpm();
+		}
+	}
 
 	float delayTimeWholeNote = (60.0f / bpm) * 4;
 
 	float noteDuration = getNoteDuration((int)delayTimeTypeIndex, delayTimeWholeNote);
 	float delayInSamples = noteDuration * processSpec.sampleRate;
 
-	if (numChannels >= 2 && isPingPong)
-	{
 		float* leftChannelData = buffer.getWritePointer(0);
 		float* rightChannelData = buffer.getWritePointer(1);
 
@@ -157,24 +164,13 @@ void DelayEffectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 			leftChannelData[sample] = inputL * (1.0f - dryWet) + delayedL * dryWet;
 			rightChannelData[sample] = inputR * (1.0f - dryWet) + delayedR * dryWet;
 		}
-	}
-	else
-	{
-		for (int channel = 0; channel < numChannels; ++channel)
+
+		if (isPingPong == false) 
 		{
-			float* channelData = buffer.getWritePointer(channel);
-
-			for (int sample = 0; sample < numSamples; ++sample)
-			{
-				float inputSample = channelData[sample];
-				float delayedSample = delayLine.popSample(channel, delayInSamples);
-				float delayedInput = inputSample + (delayedSample * feedback);
-				delayLine.pushSample(channel, delayedInput);
-				channelData[sample] = inputSample * (1.0f - dryWet) + delayedSample * dryWet;
-			}
+			buffer.addFrom(0, 0, buffer, 1, 0, buffer.getNumSamples());
+			buffer.copyFrom(1, 0, buffer, 0, 0, buffer.getNumSamples());
 		}
-	}
-
+	
 	waveFormViewer.pushBuffer(buffer);
 }
 
@@ -267,7 +263,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayEffectAudioProcessor::c
 		auto parameter = std::make_unique<juce::AudioParameterChoice>(
 			"delayTimeType",
 			"Delay Time Type",
-			juce::StringArray{ "SEC", "NRM", "TRIP", "DOT" },
+			juce::StringArray{ "Sec", "Nrm", "Trip", "Dot" },
 			0
 		);
 		parameters.delayTimeType = parameter.get();
@@ -303,7 +299,7 @@ void DelayEffectAudioProcessor::parameterChanged(const juce::String& parameterID
 	{
 		delayTimeFractionIndex = newValue;
 	}
-	else if (parameterID == "isPingPong") 
+	else if (parameterID == "isPingPong")
 	{
 		isPingPong = newValue;
 	}

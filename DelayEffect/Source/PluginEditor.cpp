@@ -68,7 +68,7 @@ DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor(DelayEffectAudi
 	addAndMakeVisible(webBrowserComponent);
 	audioProcessor.waveFormViewer.setColours(juce::Colours::black, juce::Colour(214, 214, 214));
 	webBrowserComponent.goToURL(LOCAL_DEV_SERVER_ADDRESS);
-	setSize(700, 600);
+	setSize(650, 500);
 }
 
 DelayEffectAudioProcessorEditor::~DelayEffectAudioProcessorEditor()
@@ -82,7 +82,7 @@ void DelayEffectAudioProcessorEditor::paint(juce::Graphics& g)
 
 void DelayEffectAudioProcessorEditor::resized()
 {
-	const int waveFormViewerHeight = 150;
+	const int waveFormViewerHeight = 100;
 	audioProcessor.waveFormViewer.setBounds(0, 0, getLocalBounds().getWidth(), waveFormViewerHeight);
 	webBrowserComponent.setBounds(getLocalBounds().withTrimmedTop(waveFormViewerHeight));
 }
