@@ -39,7 +39,7 @@ function App() {
   }
 
   return (
-    <main className="h-screen w-screen flex items-center justify-center flex-col">
+    <main className="h-screen w-screen flex items-center justify-start flex-col">
       <div className="divider"></div>
       <div className="flex justify-evenly items-center w-full">
         <div style={{
