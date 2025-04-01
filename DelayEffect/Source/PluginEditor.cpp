@@ -73,6 +73,7 @@ DelayEffectAudioProcessorEditor::DelayEffectAudioProcessorEditor(DelayEffectAudi
 	addAndMakeVisible(webBrowserComponent);
 	audioProcessor.waveFormViewer.setColours(juce::Colours::black, juce::Colour(214, 214, 214));
 	webBrowserComponent.goToURL(juce::WebBrowserComponent::getResourceProviderRoot());
+	//webBrowserComponent.goToURL(LOCAL_DEV_SERVER_ADDRESS);
 	setSize(650, 500);
 }
 

@@ -124,8 +124,6 @@ void DelayEffectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 {
 	juce::ScopedNoDenormals noDenormals;
 
-	return;
-
 	const int numChannels = getTotalNumOutputChannels();
 	const int numSamples = buffer.getNumSamples();
 
